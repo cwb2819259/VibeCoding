@@ -1,0 +1,44 @@
+/* VibeCoding 后台管理 - 与登录页一致的紫色主题 */
+:root {
+  --admin-primary: #7c3aed;
+  --admin-primary-dark: #6d28d9;
+  --admin-primary-light: #f3e8ff;
+  --admin-bg: #faf5ff;
+  --admin-bg-main: #f3e8ff;
+  --admin-text: #4c1d95;
+  --admin-text-secondary: #5b21b6;
+  --admin-border: rgba(124, 58, 237, 0.12);
+  --admin-card-radius: 16px;
+  --admin-card-shadow: 0 1px 3px rgba(124, 58, 237, 0.08);
+  --admin-card-shadow-hover: 0 4px 12px rgba(124, 58, 237, 0.12);
+  --admin-transition: 0.2s ease;
+}
+
+body {
+  font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--admin-text);
+  background: var(--admin-bg);
+}
+
+/* Element Plus 主色覆盖（与登录页一致） */
+.el-button--primary {
+  background: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: var(--admin-primary-dark);
+  border-color: var(--admin-primary-dark);
+}
+.el-radio-button__inner:hover,
+.el-radio-button__original-radio:checked + .el-radio-button__inner {
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+.el-pagination.is-background .el-pager li.is-active {
+  background: var(--admin-primary);
+}
+.el-menu-item.is-active {
+  color: var(--admin-primary) !important;
+  background: var(--admin-primary-light) !important;
+}

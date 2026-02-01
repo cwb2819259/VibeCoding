@@ -1,0 +1,12 @@
+# 依赖
+node_modules/
+
+# 后端编译产物（Go 二进制）
+backend/api
+
+# 日志目录（后端输出到 log/app.log）
+log/
+backend/log/
+
+# 上传文件目录（Docker 挂载到 ./data/upload）
+data/upload/

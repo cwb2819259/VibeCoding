@@ -1,0 +1,590 @@
+basePath: /
+definitions:
+  github_com_vibecoding_community_internal_model.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      post_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_vibecoding_community_internal_model.User'
+      user_id:
+        type: integer
+    type: object
+  github_com_vibecoding_community_internal_model.Post:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      media:
+        items:
+          $ref: '#/definitions/github_com_vibecoding_community_internal_model.PostMedia'
+        type: array
+      status:
+        $ref: '#/definitions/github_com_vibecoding_community_internal_model.PostStatus'
+      type:
+        $ref: '#/definitions/github_com_vibecoding_community_internal_model.PostType'
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_vibecoding_community_internal_model.User'
+      user_id:
+        type: integer
+    type: object
+  github_com_vibecoding_community_internal_model.PostMedia:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      post_id:
+        type: integer
+      sort_order:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
+  github_com_vibecoding_community_internal_model.PostStatus:
+    enum:
+    - normal
+    - hidden
+    - flagged
+    type: string
+    x-enum-varnames:
+    - PostStatusNormal
+    - PostStatusHidden
+    - PostStatusFlagged
+  github_com_vibecoding_community_internal_model.PostType:
+    enum:
+    - text
+    - image
+    - video
+    type: string
+    x-enum-varnames:
+    - PostTypeText
+    - PostTypeImage
+    - PostTypeVideo
+  github_com_vibecoding_community_internal_model.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_handler_admin.AdminLoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_handler_admin.AdminLoginResp:
+    properties:
+      admin: {}
+      token:
+        type: string
+    type: object
+  internal_handler_admin.UpdatePostStatusReq:
+    properties:
+      status:
+        description: normal, hidden, flagged
+        type: string
+    type: object
+  internal_handler_c.CreateCommentReq:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
+  internal_handler_c.CreatePostReq:
+    properties:
+      content:
+        type: string
+      media_urls:
+        items:
+          type: string
+        type: array
+      topic_names:
+        items:
+          type: string
+        type: array
+      type:
+        description: text, image, video
+        type: string
+    type: object
+  internal_handler_c.LoginReq:
+    properties:
+      code:
+        type: string
+      phone:
+        type: string
+    required:
+    - code
+    - phone
+    type: object
+  internal_handler_c.LoginResp:
+    properties:
+      token:
+        type: string
+      user: {}
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: API Support
+    url: https://github.com/vibecoding/community
+  description: VibeCoding社区 C 端（帖子、评论、点赞、通知、上传）与 B 端（内容管理、用户管理、数据统计）接口文档
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://github.com/vibecoding/community
+  title: VibeCoding 社区 API
+  version: "1.0"
+paths:
+  /api/v1/admin/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: username, password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.AdminLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler_admin.AdminLoginResp'
+      summary: 管理员登录
+      tags:
+      - B端-认证
+  /api/v1/admin/posts:
+    get:
+      parameters:
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      - description: normal|hidden|flagged
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 管理后台帖子列表
+      tags:
+      - B端-内容
+  /api/v1/admin/posts/{id}:
+    delete:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 删除帖子
+      tags:
+      - B端-内容
+    get:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_vibecoding_community_internal_model.Post'
+      summary: 管理后台帖子详情
+      tags:
+      - B端-内容
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_admin.UpdatePostStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 更新帖子状态
+      tags:
+      - B端-内容
+  /api/v1/admin/stats:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 数据统计
+      tags:
+      - B端-统计
+  /api/v1/admin/users:
+    get:
+      parameters:
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 用户列表
+      tags:
+      - B端-用户
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: phone, code
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_c.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler_c.LoginResp'
+      summary: C端登录
+      tags:
+      - C端-认证
+  /api/v1/notifications:
+    get:
+      parameters:
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 通知列表
+      tags:
+      - C端-通知
+  /api/v1/notifications/{id}/read:
+    patch:
+      parameters:
+      - description: 通知ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 标记已读
+      tags:
+      - C端-通知
+  /api/v1/notifications/unread-count:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 未读数量
+      tags:
+      - C端-通知
+  /api/v1/posts:
+    get:
+      parameters:
+      - description: desc
+        in: query
+        name: order
+        type: string
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      - description: 搜索
+        in: query
+        name: keyword
+        type: string
+      - description: 话题名
+        in: query
+        name: tag
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 帖子列表
+      tags:
+      - C端-帖子
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: content, type, media_urls, topic_names
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_c.CreatePostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_vibecoding_community_internal_model.Post'
+      summary: 发帖
+      tags:
+      - C端-帖子
+  /api/v1/posts/{id}:
+    get:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_vibecoding_community_internal_model.Post'
+      summary: 帖子详情
+      tags:
+      - C端-帖子
+  /api/v1/posts/{id}/comments:
+    get:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 评论列表
+      tags:
+      - C端-互动
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: content
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler_c.CreateCommentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_vibecoding_community_internal_model.Comment'
+      summary: 发表评论
+      tags:
+      - C端-互动
+  /api/v1/posts/{id}/like:
+    delete:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 取消点赞
+      tags:
+      - C端-互动
+    post:
+      parameters:
+      - description: 帖子ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 点赞
+      tags:
+      - C端-互动
+  /api/v1/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 上传文件
+      tags:
+      - C端-上传
+  /api/v1/users/me/posts:
+    get:
+      parameters:
+      - description: "0"
+        in: query
+        name: offset
+        type: integer
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 我的帖子
+      tags:
+      - C端-帖子
+schemes:
+- http
+- https
+swagger: "2.0"

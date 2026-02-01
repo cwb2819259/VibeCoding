@@ -1,0 +1,1 @@
+function o(t){if(!t)return"";const i=t.startsWith("http")||t.startsWith("/")?t:"/"+t;if(i.startsWith("http")||typeof window>"u")return i;const n=window.location.origin;return n.includes(":5173")||n.includes(":5174")?window.location.protocol+"//"+window.location.hostname+i:n+i}export{o as m};

@@ -35,7 +35,7 @@ import { notifications as notifApi } from '../api'
 
 const list = ref([])
 const loading = ref(true)
-const POLL_INTERVAL_MS = 15000
+const POLL_INTERVAL_MS = 3000
 let pollTimer = null
 
 function formatTime(t) {

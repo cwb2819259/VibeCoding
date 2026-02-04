@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { notifications as notifApi } from '../api'
 
-const POLL_INTERVAL_MS = 20000
+const POLL_INTERVAL_MS = 3000
 
 export const useNotifStore = defineStore('notif', () => {
   const unreadCount = ref(0)
